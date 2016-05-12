@@ -1,7 +1,7 @@
-﻿namespace MVCForum.Domain.Interfaces.Badges 
+﻿namespace MVCForum.Domain.Interfaces.Badges
 {
-    public interface IPostBadge : IBadge
-    {
-        
-    }
+	public interface IPostBadge : IBadge
+	{
+
+	}
 }

@@ -2,8 +2,8 @@
 
 namespace MVCForum.Domain.Interfaces.Events
 {
-    public interface IEventHandler
-    {
-        void RegisterHandlers(EventManager theEventManager);
-    }
+	public interface IEventHandler
+	{
+		void RegisterHandlers(EventManager theEventManager);
+	}
 }

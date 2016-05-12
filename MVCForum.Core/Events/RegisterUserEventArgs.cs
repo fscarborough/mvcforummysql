@@ -2,9 +2,9 @@
 
 namespace MVCForum.Domain.Events
 {
-    public class RegisterUserEventArgs : MVCForumEventArgs
-    {
-        public MembershipUser User { get; set; }
-        public MembershipCreateStatus CreateStatus { get; set; }
-    }
+	public class RegisterUserEventArgs : MVCForumEventArgs
+	{
+		public MembershipUser User { get; set; }
+		public MembershipCreateStatus CreateStatus { get; set; }
+	}
 }

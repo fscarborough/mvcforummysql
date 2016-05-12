@@ -7,81 +7,81 @@ using MVCForum.Website.Areas.Admin.ViewModels;
 
 namespace MVCForum.Website.Areas.Admin.Controllers
 {
-    [Authorize(Roles = AppConstants.AdminRoleName)]
-    public class AdminSocialController : BaseAdminController
-    {
-        private readonly ICacheService _cacheService;
+	[Authorize(Roles = AppConstants.AdminRoleName)]
+	public class AdminSocialController : BaseAdminController
+	{
+		private readonly ICacheService _cacheService;
 
-        public AdminSocialController(ILoggingService loggingService, IUnitOfWorkManager unitOfWorkManager, IMembershipService membershipService, ILocalizationService localizationService, ISettingsService settingsService, ICacheService cacheService)
-            : base(loggingService, unitOfWorkManager, membershipService, localizationService, settingsService)
-        {
-            _cacheService = cacheService;
-        }
+		public AdminSocialController(ILoggingService loggingService, IUnitOfWorkManager unitOfWorkManager, IMembershipService membershipService, ILocalizationService localizationService, ISettingsService settingsService, ICacheService cacheService)
+			: base(loggingService, unitOfWorkManager, membershipService, localizationService, settingsService)
+		{
+			_cacheService = cacheService;
+		}
 
-        public ActionResult Index()
-        {
-            using (UnitOfWorkManager.NewUnitOfWork())
-            {
-                var settings = SettingsService.GetSettings();
-                var viewModel = new SocialSettingsViewModel
-                {
-                    EnableSocialLogins = settings.EnableSocialLogins == true,
-                    FacebookAppId = SiteConstants.Instance.FacebookAppId,
-                    FacebookAppSecret = SiteConstants.Instance.FacebookAppSecret,
-                    GooglePlusAppId = SiteConstants.Instance.GooglePlusAppId,
-                    GooglePlusAppSecret = SiteConstants.Instance.GooglePlusAppSecret,
-                    MicrosoftAppId = SiteConstants.Instance.MicrosoftAppId,
-                    MicrosoftAppSecret = SiteConstants.Instance.MicrosoftAppSecret
-                };
-                return View(viewModel);
-            }
-        }
+		public ActionResult Index()
+		{
+			using (UnitOfWorkManager.NewUnitOfWork())
+			{
+				var settings = SettingsService.GetSettings();
+				var viewModel = new SocialSettingsViewModel
+				{
+					EnableSocialLogins = settings.EnableSocialLogins == true,
+					FacebookAppId = SiteConstants.Instance.FacebookAppId,
+					FacebookAppSecret = SiteConstants.Instance.FacebookAppSecret,
+					GooglePlusAppId = SiteConstants.Instance.GooglePlusAppId,
+					GooglePlusAppSecret = SiteConstants.Instance.GooglePlusAppSecret,
+					MicrosoftAppId = SiteConstants.Instance.MicrosoftAppId,
+					MicrosoftAppSecret = SiteConstants.Instance.MicrosoftAppSecret
+				};
+				return View(viewModel);
+			}
+		}
 
-        [HttpPost]
-        public ActionResult Index(SocialSettingsViewModel viewModel)
-        {
-            using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
-            {
- 
-                var settings = SettingsService.GetSettings(false);
+		[HttpPost]
+		public ActionResult Index(SocialSettingsViewModel viewModel)
+		{
+			using (var unitOfWork = UnitOfWorkManager.NewUnitOfWork())
+			{
 
-                settings.EnableSocialLogins = viewModel.EnableSocialLogins;
+				var settings = SettingsService.GetSettings(false);
 
-                // Repopulate the view model
-                viewModel.FacebookAppId = SiteConstants.Instance.FacebookAppId;
-                viewModel.FacebookAppSecret = SiteConstants.Instance.FacebookAppSecret;
-                viewModel.GooglePlusAppId = SiteConstants.Instance.GooglePlusAppId;
-                viewModel.GooglePlusAppSecret = SiteConstants.Instance.GooglePlusAppSecret;
-                viewModel.MicrosoftAppId = SiteConstants.Instance.MicrosoftAppId;
-                viewModel.MicrosoftAppSecret = SiteConstants.Instance.MicrosoftAppSecret;
+				settings.EnableSocialLogins = viewModel.EnableSocialLogins;
 
-                try
-                {
-                    unitOfWork.Commit();
-                    _cacheService.ClearStartsWith(AppConstants.SettingsCacheName);
-                    // Show a message
-                    ShowMessage(new GenericMessageViewModel
-                    {
-                        Message = "Updated",
-                        MessageType = GenericMessages.success
-                    });
+				// Repopulate the view model
+				viewModel.FacebookAppId = SiteConstants.Instance.FacebookAppId;
+				viewModel.FacebookAppSecret = SiteConstants.Instance.FacebookAppSecret;
+				viewModel.GooglePlusAppId = SiteConstants.Instance.GooglePlusAppId;
+				viewModel.GooglePlusAppSecret = SiteConstants.Instance.GooglePlusAppSecret;
+				viewModel.MicrosoftAppId = SiteConstants.Instance.MicrosoftAppId;
+				viewModel.MicrosoftAppSecret = SiteConstants.Instance.MicrosoftAppSecret;
 
-                }
-                catch (Exception ex)
-                {
-                    LoggingService.Error(ex);
-                    unitOfWork.Rollback();
+				try
+				{
+					unitOfWork.Commit();
+					_cacheService.ClearStartsWith(AppConstants.SettingsCacheName);
+					// Show a message
+					ShowMessage(new GenericMessageViewModel
+					{
+						Message = "Updated",
+						MessageType = GenericMessages.success
+					});
 
-                    // Show a message
-                    ShowMessage(new GenericMessageViewModel
-                    {
-                        Message = "Error, please check log",
-                        MessageType = GenericMessages.danger
-                    });
-                }
+				}
+				catch (Exception ex)
+				{
+					LoggingService.Error(ex);
+					unitOfWork.Rollback();
 
-                return View(viewModel); 
-            }
-        }
-    }
+					// Show a message
+					ShowMessage(new GenericMessageViewModel
+					{
+						Message = "Error, please check log",
+						MessageType = GenericMessages.danger
+					});
+				}
+
+				return View(viewModel);
+			}
+		}
+	}
 }

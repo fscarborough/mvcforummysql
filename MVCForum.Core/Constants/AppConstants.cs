@@ -2,116 +2,116 @@
 
 namespace MVCForum.Domain.Constants
 {
-    public static class AppConstants
-    {
-        public const int SaltSize = 24;
-        public const string EditorType = "forumeditor";
+	public static class AppConstants
+	{
+		public const int SaltSize = 24;
+		public const string EditorType = "forumeditor";
 
-        // Scheduled Tasks
-        public const string DefaultTaskGroup = "MVCForumTaskGroup";
+		// Scheduled Tasks
+		public const string DefaultTaskGroup = "MVCForumTaskGroup";
 
-        // Cookie names
-        public const string LanguageIdCookieName = "LanguageCulture";
-        public const string MemberEmailConfirmationCookieName = "MVCForumEmailConfirmation";
+		// Cookie names
+		public const string LanguageIdCookieName = "LanguageCulture";
+		public const string MemberEmailConfirmationCookieName = "MVCForumEmailConfirmation";
 
-        // Cache names
-        public const string SettingsCacheName = "MainSettings";
-        public const string LocalisationCacheName = "Localization-";
-        public static string LanguageStrings = string.Concat(LocalisationCacheName, "LangStrings-");
-        public const string MemberCacheName = "#member#-{0}";
+		// Cache names
+		public const string SettingsCacheName = "MainSettings";
+		public const string LocalisationCacheName = "Localization-";
+		public static string LanguageStrings = string.Concat(LocalisationCacheName, "LangStrings-");
+		public const string MemberCacheName = "#member#-{0}";
 
-        // View Bag / Temp Data Constants
-        public const string MessageViewBagName = "Message";
-        public const string DefaultCategoryViewBagName = "DefaultCategory";
-        public const string GlobalClass = "GlobalClass";
-        public const string CurrentAction = "CurrentAction";
-        public const string CurrentController = "CurrentController";
-        public const string MemberRegisterViewModel = "MemberRegisterViewModel";
-        
-        // Main admin role [This should never be changed]
-        public const string AdminRoleName = "Admin";
+		// View Bag / Temp Data Constants
+		public const string MessageViewBagName = "Message";
+		public const string DefaultCategoryViewBagName = "DefaultCategory";
+		public const string GlobalClass = "GlobalClass";
+		public const string CurrentAction = "CurrentAction";
+		public const string CurrentController = "CurrentController";
+		public const string MemberRegisterViewModel = "MemberRegisterViewModel";
 
-        // Main guest role [This should never be changed]
-        // This is the role a non logged in user defaults to
-        public const string GuestRoleName = "Guest";
+		// Main admin role [This should never be changed]
+		public const string AdminRoleName = "Admin";
 
-        //------------ End Permissions ----------
+		// Main guest role [This should never be changed]
+		// This is the role a non logged in user defaults to
+		public const string GuestRoleName = "Guest";
 
-        // Paging options
-        public const string PagingUrlFormat = "{0}?p={1}";
+		//------------ End Permissions ----------
 
-        // How long 
-        public const int TimeSpanInMinutesToShowMembers = 12;
+		// Paging options
+		public const string PagingUrlFormat = "{0}?p={1}";
 
-        /// <summary>
-        /// Last Activity Time Check. 
-        /// </summary>
-        public const int TimeSpanInMinutesToDoCheck = 3;
+		// How long 
+		public const int TimeSpanInMinutesToShowMembers = 12;
 
-        
-        public const string EditorTemplateColourPicker = "colourpicker";
+		/// <summary>
+		/// Last Activity Time Check. 
+		/// </summary>
+		public const int TimeSpanInMinutesToDoCheck = 3;
 
-        //Querystring names
-        public const string PostOrderBy = "order";
-        public const string AllPosts = "all";
 
-        //Mobile Check Name
-        public const string IsMobileDevice = "IsMobileDevice";
+		public const string EditorTemplateColourPicker = "colourpicker";
 
-        /// <summary>
-        /// Cache lengths
-        /// </summary>
-        public static List<string> ReflectionDllsToAvoid = new List<string>
-        {
-            "EcmaScript.NET.dll",
-            "Unity.WebApi.dll",
-            "Skybrud.Social.dll",
-            "Antlr3.Runtime.dll",
-            "WebGrease.dll",
-            "System.Web.Optimization.dll",
-            "Common.Logging.Core.dll",
-            "Common.Logging.dll",
-            "EntityFramework.dll",
-            "EntityFramework.SqlServer.dll",
-            "EntityFramework.SqlServerCompact.dll",
-            "System.Data.SqlServerCe.dll",
-            "Newtonsoft.Json.dll",
-            "Quartz.dll",
-            "SquishIt.Framework.dll",
-            "SquishIt.Mvc.dll",
-            "ImageProcessor.Web.dll",
-            "ImageProcessor.dll",
-            "AntiXssLibrary.dll",
-            "HtmlSanitizationLibrary.dll",
-            "System.Web.Http.dll",
-            "System.Web.Http.WebHost.dll",
-            "System.Net.Http.Formatting.dll",
-            "System.Web.Helpers.dll",
-            "System.Web.Mvc.dll",
-            "System.Web.WebPages.Deployment.dll",
-            "System.Web.WebPages.dll",
-            "System.Web.WebPages.Razor.dll",
-            "System.Web.Razor.dll",
-            "Quartz.Unity.45.dll",
-            "EFCache.dll",
-            "HtmlAgilityPack.dll",
-            "Microsoft.Practices.Unity.Configuration.dll",
-            "Microsoft.Practices.Unity.dll",
-            "Microsoft.Practices.Unity.RegistrationByConvention.dll",
-            "Microsoft.Practices.ServiceLocation.dll",
-            "Unity.WebApi.dll",
-            "Unity.Mvc4.dll",
-            "WebActivator.dll",
-            "System.Net.Http.dll",
-            "System.Net.Http.WebRequest.dll",
-            "AjaxMin.dll",
-            "Iesi.Collections.dll",
-            "Yahoo.Yui.Compressor.dll",
-            "Microsoft.Web.Services3.dll",
-            "Microsoft.Web.Infrastructure.dll",
-            "DotNetOpenAuth",
-            "Microsoft",
-        };
+		//Querystring names
+		public const string PostOrderBy = "order";
+		public const string AllPosts = "all";
 
-    }
+		//Mobile Check Name
+		public const string IsMobileDevice = "IsMobileDevice";
+
+		/// <summary>
+		/// Cache lengths
+		/// </summary>
+		public static List<string> ReflectionDllsToAvoid = new List<string>
+		{
+			"EcmaScript.NET.dll",
+			"Unity.WebApi.dll",
+			"Skybrud.Social.dll",
+			"Antlr3.Runtime.dll",
+			"WebGrease.dll",
+			"System.Web.Optimization.dll",
+			"Common.Logging.Core.dll",
+			"Common.Logging.dll",
+			"EntityFramework.dll",
+			"EntityFramework.SqlServer.dll",
+			"EntityFramework.SqlServerCompact.dll",
+			"System.Data.SqlServerCe.dll",
+			"Newtonsoft.Json.dll",
+			"Quartz.dll",
+			"SquishIt.Framework.dll",
+			"SquishIt.Mvc.dll",
+			"ImageProcessor.Web.dll",
+			"ImageProcessor.dll",
+			"AntiXssLibrary.dll",
+			"HtmlSanitizationLibrary.dll",
+			"System.Web.Http.dll",
+			"System.Web.Http.WebHost.dll",
+			"System.Net.Http.Formatting.dll",
+			"System.Web.Helpers.dll",
+			"System.Web.Mvc.dll",
+			"System.Web.WebPages.Deployment.dll",
+			"System.Web.WebPages.dll",
+			"System.Web.WebPages.Razor.dll",
+			"System.Web.Razor.dll",
+			"Quartz.Unity.45.dll",
+			"EFCache.dll",
+			"HtmlAgilityPack.dll",
+			"Microsoft.Practices.Unity.Configuration.dll",
+			"Microsoft.Practices.Unity.dll",
+			"Microsoft.Practices.Unity.RegistrationByConvention.dll",
+			"Microsoft.Practices.ServiceLocation.dll",
+			"Unity.WebApi.dll",
+			"Unity.Mvc4.dll",
+			"WebActivator.dll",
+			"System.Net.Http.dll",
+			"System.Net.Http.WebRequest.dll",
+			"AjaxMin.dll",
+			"Iesi.Collections.dll",
+			"Yahoo.Yui.Compressor.dll",
+			"Microsoft.Web.Services3.dll",
+			"Microsoft.Web.Infrastructure.dll",
+			"DotNetOpenAuth",
+			"Microsoft",
+		};
+
+	}
 }

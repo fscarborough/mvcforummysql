@@ -2,18 +2,18 @@
 
 namespace MVCForum.IOC
 {
-    public class PreApplicationStartCode
-    {
-        private static bool _isStarting;
+	public class PreApplicationStartCode
+	{
+		private static bool _isStarting;
 
-        public static void PreStart()
-        {
-            if (!_isStarting)
-            {
-                _isStarting = true;
+		public static void PreStart()
+		{
+			if (!_isStarting)
+			{
+				_isStarting = true;
 
-                DynamicModuleUtility.RegisterModule(typeof(RequestLifetimeHttpModule));
-            }
-        }
-    }
+				DynamicModuleUtility.RegisterModule(typeof(RequestLifetimeHttpModule));
+			}
+		}
+	}
 }

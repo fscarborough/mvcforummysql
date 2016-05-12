@@ -8,34 +8,34 @@ using MVCForum.Services.Data.Context;
 
 namespace MVCForum.Services
 {
-    public partial class PollService : IPollService
-    {
-        private readonly MVCForumContext _context;
-        public PollService(IMVCForumContext context)
-        {
-            _context = context as MVCForumContext;
-        }
+	public partial class PollService : IPollService
+	{
+		private readonly MVCForumContext _context;
+		public PollService(IMVCForumContext context)
+		{
+			_context = context as MVCForumContext;
+		}
 
-        public List<Poll> GetAllPolls()
-        {
-            return _context.Poll.ToList();
-        }
+		public List<Poll> GetAllPolls()
+		{
+			return _context.Poll.ToList();
+		}
 
-        public Poll Add(Poll poll)
-        {
-            poll.DateCreated = DateTime.UtcNow;
-            poll.IsClosed = false;
-            return _context.Poll.Add(poll);
-        }
+		public Poll Add(Poll poll)
+		{
+			poll.DateCreated = DateTime.UtcNow;
+			poll.IsClosed = false;
+			return _context.Poll.Add(poll);
+		}
 
-        public Poll Get(Guid id)
-        {
-            return _context.Poll.FirstOrDefault(x => x.Id == id);
-        }
+		public Poll Get(Guid id)
+		{
+			return _context.Poll.FirstOrDefault(x => x.Id == id);
+		}
 
-        public void Delete(Poll item)
-        {
-            _context.Poll.Remove(item);
-        }
-    }
+		public void Delete(Poll item)
+		{
+			_context.Poll.Remove(item);
+		}
+	}
 }

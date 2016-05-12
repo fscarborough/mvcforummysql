@@ -2,8 +2,8 @@
 
 namespace MVCForum.Domain.Events
 {
-    public class PrivateMessageEventArgs : MVCForumEventArgs
-    {
-        public PrivateMessage PrivateMessage { get; set; }
-    }
+	public class PrivateMessageEventArgs : MVCForumEventArgs
+	{
+		public PrivateMessage PrivateMessage { get; set; }
+	}
 }

@@ -11,219 +11,229 @@ using MVCForum.Utilities;
 
 namespace MVCForum.Services
 {
-    public partial class PrivateMessageService : IPrivateMessageService
-    {
-        private readonly MVCForumContext _context;
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="context"> </param>
-        public PrivateMessageService(IMVCForumContext context)
-        {
-            _context = context as MVCForumContext;
-        }
+	public partial class PrivateMessageService : IPrivateMessageService
+	{
+		private readonly MVCForumContext _context;
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="context"> </param>
+		public PrivateMessageService(IMVCForumContext context)
+		{
+			_context = context as MVCForumContext;
+		}
 
-        public PrivateMessage SanitizeMessage(PrivateMessage privateMessage)
-        {
-            privateMessage.Message = StringUtils.GetSafeHtml(privateMessage.Message);
-            return privateMessage;
-        }
+		public PrivateMessage SanitizeMessage(PrivateMessage privateMessage)
+		{
+			privateMessage.Message = StringUtils.GetSafeHtml(privateMessage.Message);
+			return privateMessage;
+		}
 
-        /// <summary>
-        /// Add a private message
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public PrivateMessage Add(PrivateMessage message)
-        {
-            // This is the message that the other user sees
-            message = SanitizeMessage(message);
-            message.DateSent = DateTime.UtcNow;
-            message.IsSentMessage = false;
+		/// <summary>
+		/// Add a private message
+		/// </summary>
+		/// <param name="message"></param>
+		/// <returns></returns>
+		public PrivateMessage Add(PrivateMessage message)
+		{
+			// This is the message that the other user sees
+			message = SanitizeMessage(message);
+			message.DateSent = DateTime.UtcNow;
+			message.IsSentMessage = false;
 
-            var e = new PrivateMessageEventArgs { PrivateMessage = message };
-            EventManager.Instance.FireBeforePrivateMessage(this, e);
+			var e = new PrivateMessageEventArgs { PrivateMessage = message };
+			EventManager.Instance.FireBeforePrivateMessage(this, e);
 
-            if (!e.Cancel)
-            {
-                message = _context.PrivateMessage.Add(message);
+			if (!e.Cancel)
+			{
+				message = _context.PrivateMessage.Add(message);
 
-                // We create a sent message that sits in the users sent folder, this is 
-                // so that if the receiver deletes the message - The sender still has a record of it.
-                var sentMessage = new PrivateMessage
-                {
-                    IsSentMessage = true,
-                    DateSent = message.DateSent,
-                    Message = message.Message,
-                    UserFrom = message.UserFrom,
-                    UserTo = message.UserTo
-                };
+				// We create a sent message that sits in the users sent folder, this is 
+				// so that if the receiver deletes the message - The sender still has a record of it.
+				var sentMessage = new PrivateMessage
+				{
+					IsSentMessage = true,
+					DateSent = message.DateSent,
+					Message = message.Message,
+					UserFrom = message.UserFrom,
+					UserTo = message.UserTo
+				};
 
-                _context.PrivateMessage.Add(sentMessage);
+				_context.PrivateMessage.Add(sentMessage);
 
-                EventManager.Instance.FireAfterPrivateMessage(this, new PrivateMessageEventArgs { PrivateMessage = message });
-            }
+				EventManager.Instance.FireAfterPrivateMessage(this, new PrivateMessageEventArgs { PrivateMessage = message });
+			}
 
-            // Return the main message
-            return message;
-        }
+			// Return the main message
+			return message;
+		}
 
-        /// <summary>
-        /// Return a private message by Id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public PrivateMessage Get(Guid id)
-        {
-            return _context.PrivateMessage
-                            .Include(x => x.UserTo)
-                            .Include(x => x.UserFrom)
-                            .FirstOrDefault(x => x.Id == id);
-        }
+		/// <summary>
+		/// Return a private message by Id
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public PrivateMessage Get(Guid id)
+		{
+			return _context.PrivateMessage
+							.Include(x => x.UserTo)
+							.Include(x => x.UserFrom)
+							.FirstOrDefault(x => x.Id == id);
+		}
 
-        public IPagedList<PrivateMessageListItem> GetUsersPrivateMessages(int pageIndex, int pageSize, MembershipUser user)
-        {
-            var query = _context.PrivateMessage
-                .AsNoTracking()
-                .Include(x => x.UserFrom)
-                .Include(x => x.UserTo)
-                .Where(x => (x.UserTo.Id == user.Id && x.IsSentMessage != true) || (x.UserFrom.Id == user.Id && x.IsSentMessage == true))
-                .Select(x => new PrivateMessageListItem
-                {
-                    Date = x.DateSent,
-                    User = (x.IsSentMessage == true ? x.UserTo : x.UserFrom),
-                    HasUnreadMessages = (x.IsSentMessage != true && x.UserFrom.Id != user.Id && (x.IsRead == false))
-                })
-                .GroupBy(x => x.User.Id)
-                .Select(x => x.OrderByDescending(d => d.Date).FirstOrDefault())
-                .OrderByDescending(x => x.Date);
+		public IPagedList<PrivateMessageListItem> GetUsersPrivateMessages(int pageIndex, int pageSize, MembershipUser user)
+		{
+			var results = new List<PrivateMessageListItem>();
+			var total = 0;
 
-            var total = query.Count();
+			if (!_context.PrivateMessage.Any())
+			{
+				//
+			}
+			else
+			{
+				var query = _context.PrivateMessage
+					.AsNoTracking()
+					.Include(x => x.UserFrom)
+					.Include(x => x.UserTo)
+					.Where(x => (x.UserTo.Id == user.Id && x.IsSentMessage != true) || (x.UserFrom.Id == user.Id && x.IsSentMessage == true))
+					.Select(x => new PrivateMessageListItem
+					{
+						Date = x.DateSent,
+						User = (x.IsSentMessage == true ? x.UserTo : x.UserFrom),
+						HasUnreadMessages = (x.IsSentMessage != true && x.UserFrom.Id != user.Id && (x.IsRead == false))
+					})
+					.GroupBy(x => x.User.Id)
+					.Select(x => x.OrderByDescending(d => d.Date).FirstOrDefault())
+					.OrderByDescending(x => x.Date);
 
-            var results = query
-                            .Skip((pageIndex - 1) * pageSize)
-                            .Take(pageSize)
-                            .ToList();
+				total = query.Count();
 
-            // Return a paged list
-            return new PagedList<PrivateMessageListItem>(results, pageIndex, pageSize, total);
-        }
+				results = query
+					.Skip((pageIndex - 1) * pageSize)
+					.Take(pageSize)
+					.ToList();
+			}
 
-        public IPagedList<PrivateMessage> GetUsersPrivateMessages(int pageIndex, int pageSize, MembershipUser toUser, MembershipUser fromUser)
-        {
-            var query = _context.PrivateMessage
-               .AsNoTracking()
-               .Include(x => x.UserFrom)
-               .Include(x => x.UserTo)
-               .Where(x => (x.UserFrom.Id == fromUser.Id && x.UserTo.Id == toUser.Id && x.IsSentMessage != true) || (x.UserFrom.Id == toUser.Id && x.UserTo.Id == fromUser.Id && x.IsSentMessage == true))
-               .OrderByDescending(x => x.DateSent);
+			// Return a paged list
+			return new PagedList<PrivateMessageListItem>(results, pageIndex, pageSize, total);
+		}
 
-            var total = query.Count();
+		public IPagedList<PrivateMessage> GetUsersPrivateMessages(int pageIndex, int pageSize, MembershipUser toUser, MembershipUser fromUser)
+		{
+			var query = _context.PrivateMessage
+			   .AsNoTracking()
+			   .Include(x => x.UserFrom)
+			   .Include(x => x.UserTo)
+			   .Where(x => (x.UserFrom.Id == fromUser.Id && x.UserTo.Id == toUser.Id && x.IsSentMessage != true) || (x.UserFrom.Id == toUser.Id && x.UserTo.Id == fromUser.Id && x.IsSentMessage == true))
+			   .OrderByDescending(x => x.DateSent);
 
-            var results = query
-                            .Skip((pageIndex - 1) * pageSize)
-                            .Take(pageSize)
-                            .ToList();
+			var total = query.Count();
 
-            // Return a paged list
-            return new PagedList<PrivateMessage>(results, pageIndex, pageSize, total);
-        }
+			var results = query
+							.Skip((pageIndex - 1) * pageSize)
+							.Take(pageSize)
+							.ToList();
 
-
-        /// <summary>
-        /// Gets the last sent private message from a specific user
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public PrivateMessage GetLastSentPrivateMessage(Guid id)
-        {
-            return _context.PrivateMessage
-                                .Include(x => x.UserTo)
-                                .Include(x => x.UserFrom)
-                                .FirstOrDefault(x => x.UserFrom.Id == id);
-        }
-
-        public PrivateMessage GetMatchingSentPrivateMessage(DateTime date, Guid senderId, Guid receiverId)
-        {
-            return _context.PrivateMessage
-                                .Include(x => x.UserTo)
-                                .Include(x => x.UserFrom)
-                                .FirstOrDefault(x => x.DateSent == date && x.UserFrom.Id == senderId && x.UserTo.Id == receiverId && x.IsSentMessage == true);
-        }
-
-        /// <summary>
-        /// Gets all private messages sent by a user
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public IList<PrivateMessage> GetAllSentByUser(Guid id)
-        {
-            return _context.PrivateMessage
-                                .Include(x => x.UserTo)
-                                .Include(x => x.UserFrom)
-                                .Where(x => x.UserFrom.Id == id)
-                                .OrderByDescending(x => x.DateSent)
-                                .ToList();
-        }
-
-        public IList<PrivateMessage> GetPrivateMessagesOlderThan(int days)
-        {
-            var date = DateTime.UtcNow.AddDays(-days);
-            return _context.PrivateMessage.Where(x => x.DateSent <= date).ToList();
-        }
-
-        /// <summary>
-        /// Returns a count of any new messages the user has
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public int NewPrivateMessageCount(Guid userId)
-        {
-            return _context.PrivateMessage
-                            .Include(x => x.UserTo)
-                            .Include(x => x.UserFrom)
-                            .Where(x => x.UserTo.Id == userId && !x.IsRead && x.IsSentMessage != true)
-                            .GroupBy(x => x.UserFrom.Id).Count();
-        }
-
-        /// <summary>
-        /// Gets all private messages received by a user
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public IList<PrivateMessage> GetAllReceivedByUser(Guid id)
-        {
-            return _context.PrivateMessage
-                                .Where(x => x.UserTo.Id == id)
-                                .OrderByDescending(x => x.DateSent)
-                                .ToList();
-        }
+			// Return a paged list
+			return new PagedList<PrivateMessage>(results, pageIndex, pageSize, total);
+		}
 
 
-        /// <summary>
-        /// get all private messages sent from one user to another
-        /// </summary>
-        /// <param name="senderId"></param>
-        /// <param name="receiverId"></param>
-        /// <returns></returns>
-        public IList<PrivateMessage> GetAllByUserToAnotherUser(Guid senderId, Guid receiverId)
-        {
-            return _context.PrivateMessage
-                                .Include(x => x.UserTo)
-                                .Include(x => x.UserFrom)
-                                .Where(x => x.UserFrom.Id == senderId && x.UserTo.Id == receiverId)
-                                .OrderByDescending(x => x.DateSent)
-                                .ToList();
-        }
+		/// <summary>
+		/// Gets the last sent private message from a specific user
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public PrivateMessage GetLastSentPrivateMessage(Guid id)
+		{
+			return _context.PrivateMessage
+								.Include(x => x.UserTo)
+								.Include(x => x.UserFrom)
+								.FirstOrDefault(x => x.UserFrom.Id == id);
+		}
 
-        /// <summary>
-        /// Delete a private message
-        /// </summary>
-        /// <param name="message"></param>
-        public void DeleteMessage(PrivateMessage message)
-        {
-            _context.PrivateMessage.Remove(message);
-        }
+		public PrivateMessage GetMatchingSentPrivateMessage(DateTime date, Guid senderId, Guid receiverId)
+		{
+			return _context.PrivateMessage
+								.Include(x => x.UserTo)
+								.Include(x => x.UserFrom)
+								.FirstOrDefault(x => x.DateSent == date && x.UserFrom.Id == senderId && x.UserTo.Id == receiverId && x.IsSentMessage == true);
+		}
 
-    }
+		/// <summary>
+		/// Gets all private messages sent by a user
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public IList<PrivateMessage> GetAllSentByUser(Guid id)
+		{
+			return _context.PrivateMessage
+								.Include(x => x.UserTo)
+								.Include(x => x.UserFrom)
+								.Where(x => x.UserFrom.Id == id)
+								.OrderByDescending(x => x.DateSent)
+								.ToList();
+		}
+
+		public IList<PrivateMessage> GetPrivateMessagesOlderThan(int days)
+		{
+			var date = DateTime.UtcNow.AddDays(-days);
+			return _context.PrivateMessage.Where(x => x.DateSent <= date).ToList();
+		}
+
+		/// <summary>
+		/// Returns a count of any new messages the user has
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <returns></returns>
+		public int NewPrivateMessageCount(Guid userId)
+		{
+			return _context.PrivateMessage
+							.Include(x => x.UserTo)
+							.Include(x => x.UserFrom)
+							.Where(x => x.UserTo.Id == userId && !x.IsRead && x.IsSentMessage != true)
+							.GroupBy(x => x.UserFrom.Id).Count();
+		}
+
+		/// <summary>
+		/// Gets all private messages received by a user
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public IList<PrivateMessage> GetAllReceivedByUser(Guid id)
+		{
+			return _context.PrivateMessage
+								.Where(x => x.UserTo.Id == id)
+								.OrderByDescending(x => x.DateSent)
+								.ToList();
+		}
+
+
+		/// <summary>
+		/// get all private messages sent from one user to another
+		/// </summary>
+		/// <param name="senderId"></param>
+		/// <param name="receiverId"></param>
+		/// <returns></returns>
+		public IList<PrivateMessage> GetAllByUserToAnotherUser(Guid senderId, Guid receiverId)
+		{
+			return _context.PrivateMessage
+								.Include(x => x.UserTo)
+								.Include(x => x.UserFrom)
+								.Where(x => x.UserFrom.Id == senderId && x.UserTo.Id == receiverId)
+								.OrderByDescending(x => x.DateSent)
+								.ToList();
+		}
+
+		/// <summary>
+		/// Delete a private message
+		/// </summary>
+		/// <param name="message"></param>
+		public void DeleteMessage(PrivateMessage message)
+		{
+			_context.PrivateMessage.Remove(message);
+		}
+
+	}
 }

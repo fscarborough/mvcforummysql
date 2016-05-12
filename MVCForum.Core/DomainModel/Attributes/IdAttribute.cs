@@ -2,14 +2,14 @@
 
 namespace MVCForum.Domain.DomainModel.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public class IdAttribute : Attribute
-    {
-        public Guid Id { get; set; }
+	[AttributeUsage(AttributeTargets.Class)]
+	public class IdAttribute : Attribute
+	{
+		public Guid Id { get; set; }
 
-        public IdAttribute(string guid)
-        {
-            Id = new Guid(guid);
-        }
-    }
+		public IdAttribute(string guid)
+		{
+			Id = new Guid(guid);
+		}
+	}
 }

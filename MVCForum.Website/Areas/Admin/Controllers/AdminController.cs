@@ -6,44 +6,44 @@ using MVCForum.Utilities;
 
 namespace MVCForum.Website.Areas.Admin.Controllers
 {
-    [Authorize(Roles = AppConstants.AdminRoleName)]
-    public partial class AdminController : BaseAdminController
-    {
+	[Authorize(Roles = AppConstants.AdminRoleName)]
+	public partial class AdminController : BaseAdminController
+	{
 
-        public AdminController(ILoggingService loggingService,
-            IUnitOfWorkManager unitOfWorkManager,
-            IMembershipService membershipService,
-            ILocalizationService localizationService,
-            ISettingsService settingsService)
-            : base(loggingService, unitOfWorkManager, membershipService, localizationService, settingsService)
-        {
-        }
+		public AdminController(ILoggingService loggingService,
+			IUnitOfWorkManager unitOfWorkManager,
+			IMembershipService membershipService,
+			ILocalizationService localizationService,
+			ISettingsService settingsService)
+			: base(loggingService, unitOfWorkManager, membershipService, localizationService, settingsService)
+		{
+		}
 
-        /// <summary>
-        /// Default page for the admin area
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult Index()
-        {
-            return View();
-        }
+		/// <summary>
+		/// Default page for the admin area
+		/// </summary>
+		/// <returns></returns>
+		public ActionResult Index()
+		{
+			return View();
+		}
 
-        #region Utils
-        [HttpPost]
-        public void Aptitude()
-        {
-            try
-            {
-                var url = StringUtils.ReturnCurrentDomain();
-                var postString = string.Concat("url=", url);
-                var response = StringUtils.PostForm("http://www.mvcforum.com/base/MVCBase/DomainCheck", postString);
-            }
-            catch
-            {
-                // No need to do anything
-            }
-        } 
-        #endregion
+		#region Utils
+		[HttpPost]
+		public void Aptitude()
+		{
+			try
+			{
+				var url = StringUtils.ReturnCurrentDomain();
+				var postString = string.Concat("url=", url);
+				var response = StringUtils.PostForm("http://www.mvcforum.com/base/MVCBase/DomainCheck", postString);
+			}
+			catch
+			{
+				// No need to do anything
+			}
+		}
+		#endregion
 
-    }
+	}
 }

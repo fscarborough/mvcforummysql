@@ -4,9 +4,9 @@ using MVCForum.Domain.DomainModel;
 
 namespace MVCForum.Website.ViewModels
 {
-    public class LanguageListAllViewModel
-    {
-        public IEnumerable<Language> Alllanguages { get; set; }
-        public Guid CurrentLanguage { get; set; }
-    }
+	public class LanguageListAllViewModel
+	{
+		public IEnumerable<Language> Alllanguages { get; set; }
+		public Guid CurrentLanguage { get; set; }
+	}
 }

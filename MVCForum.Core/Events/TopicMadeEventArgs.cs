@@ -2,8 +2,8 @@
 
 namespace MVCForum.Domain.Events
 {
-    public class TopicMadeEventArgs : MVCForumEventArgs
-    {
-        public Topic Topic { get; set; }
-    }
+	public class TopicMadeEventArgs : MVCForumEventArgs
+	{
+		public Topic Topic { get; set; }
+	}
 }

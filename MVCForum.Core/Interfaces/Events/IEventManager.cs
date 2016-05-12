@@ -4,12 +4,12 @@ using MVCForum.Domain.Interfaces.Services;
 
 namespace MVCForum.Domain.Interfaces.Events
 {
-    public interface IEventManager
-    {        
-        /// <summary>
-        /// Use reflection to get all event handling classes. Call this ONCE.
-        /// </summary>
-        void Initialize(ILoggingService loggingService, List<Assembly> assemblies);
+	public interface IEventManager
+	{
+		/// <summary>
+		/// Use reflection to get all event handling classes. Call this ONCE.
+		/// </summary>
+		void Initialize(ILoggingService loggingService, List<Assembly> assemblies);
 
-    }
+	}
 }

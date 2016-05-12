@@ -18,232 +18,232 @@ using Skybrud.Social.Microsoft.WindowsLive.Scopes;
 
 namespace MVCForum.Website.Controllers.OAuthControllers
 {
-    public class MicrosoftOAuthController : BaseController
-    {
+	public class MicrosoftOAuthController : BaseController
+	{
 
-        // Create new app - https://account.live.com/developers/applications/create
-        // List of existing app - https://account.live.com/developers/applications/index
+		// Create new app - https://account.live.com/developers/applications/create
+		// List of existing app - https://account.live.com/developers/applications/index
 
-        public MicrosoftOAuthController(ILoggingService loggingService, IUnitOfWorkManager unitOfWorkManager, IMembershipService membershipService,
-            ILocalizationService localizationService, IRoleService roleService, ISettingsService settingsService) :
-            base(loggingService, unitOfWorkManager, membershipService, localizationService, roleService, settingsService)
-        {
-        }
+		public MicrosoftOAuthController(ILoggingService loggingService, IUnitOfWorkManager unitOfWorkManager, IMembershipService membershipService,
+			ILocalizationService localizationService, IRoleService roleService, ISettingsService settingsService) :
+			base(loggingService, unitOfWorkManager, membershipService, localizationService, roleService, settingsService)
+		{
+		}
 
-        public string ReturnUrl
-        {
-            get
-            {
-                return string.Concat(SettingsService.GetSettings().ForumUrl.TrimEnd('/'), Url.Action("MicrosoftLogin"));
-            }
-        }
+		public string ReturnUrl
+		{
+			get
+			{
+				return string.Concat(SettingsService.GetSettings().ForumUrl.TrimEnd('/'), Url.Action("MicrosoftLogin"));
+			}
+		}
 
-        public string AuthCode
-        {
-            get { return Request.QueryString["code"]; }
-        }
+		public string AuthCode
+		{
+			get { return Request.QueryString["code"]; }
+		}
 
-        public string AuthState
-        {
-            get { return Request.QueryString["state"]; }
-        }
+		public string AuthState
+		{
+			get { return Request.QueryString["state"]; }
+		}
 
-        public string AuthError
-        {
-            get { return Request.QueryString["error"]; }
-        }
+		public string AuthError
+		{
+			get { return Request.QueryString["error"]; }
+		}
 
-        public string AuthErrorDescription
-        {
-            get { return Request.QueryString["error_description"]; }
-        }
+		public string AuthErrorDescription
+		{
+			get { return Request.QueryString["error_description"]; }
+		}
 
-        public ActionResult MicrosoftLogin()
-        {
-            var resultMessage = new GenericMessageViewModel();
+		public ActionResult MicrosoftLogin()
+		{
+			var resultMessage = new GenericMessageViewModel();
 
-            var input = new
-            {
-                Code = AuthCode,
-                State = AuthState,
-                Error = new
-                {
-                    HasError = !String.IsNullOrWhiteSpace(AuthError),
-                    Text = AuthError,
-                    ErrorDescription = AuthErrorDescription
-                }
-            };
-
-
-            // Get the prevalue options
-            if (string.IsNullOrEmpty(SiteConstants.Instance.MicrosoftAppId) ||
-                string.IsNullOrEmpty(SiteConstants.Instance.MicrosoftAppSecret))
-            {
-                resultMessage.Message = "You need to add the Microsoft app credentials to the web.config";
-                resultMessage.MessageType = GenericMessages.danger;
-            }
-            else
-            {
-
-                var client = new MicrosoftOAuthClient
-                {
-                    ClientId = SiteConstants.Instance.MicrosoftAppId,
-                    ClientSecret = SiteConstants.Instance.MicrosoftAppSecret,
-                    RedirectUri = ReturnUrl
-                };
-
-                // Session expired?
-                if (input.State != null && Session["MVCForum_" + input.State] == null)
-                {
-                    resultMessage.Message = "Session Expired";
-                    resultMessage.MessageType = GenericMessages.danger;
-                }
-
-                // Check whether an error response was received from Microsoft
-                if (input.Error.HasError)
-                {
-                    Session.Remove("MVCForum_" + input.State);
-                    resultMessage.Message = AuthErrorDescription;
-                    resultMessage.MessageType = GenericMessages.danger;
-                }
-
-                // Redirect the user to the Microsoft login dialog
-                if (string.IsNullOrWhiteSpace(input.Code))
-                {
-
-                    // Generate a new unique/random state
-                    var state = Guid.NewGuid().ToString();
-
-                    // Save the state in the current user session
-                    Session["MVCForum_" + state] = "/";
-
-                    // Construct the authorization URL
-                    var url = client.GetAuthorizationUrl(state, WindowsLiveScopes.Emails + WindowsLiveScopes.Birthday);
-
-                    // Redirect the user
-                    return Redirect(url);
-                }
-
-                // Exchange the authorization code for an access token
-                MicrosoftTokenResponse accessTokenResponse;
-                try
-                {
-                    Session.Remove("MVCForum_" + input.State);
-                    accessTokenResponse = client.GetAccessTokenFromAuthCode(input.Code);
-                }
-                catch (Exception ex)
-                {
-                    accessTokenResponse = null;
-                    resultMessage.Message = string.Format("Unable to acquire access token<br/>{0}", ex.Message);
-                    resultMessage.MessageType = GenericMessages.danger;
-                }
+			var input = new
+			{
+				Code = AuthCode,
+				State = AuthState,
+				Error = new
+				{
+					HasError = !String.IsNullOrWhiteSpace(AuthError),
+					Text = AuthError,
+					ErrorDescription = AuthErrorDescription
+				}
+			};
 
 
-                try
-                {
-                    if (string.IsNullOrEmpty(resultMessage.Message) || accessTokenResponse != null)
-                    {
-                        //MicrosoftScope debug = accessTokenResponse.Body.Scope.Items;
+			// Get the prevalue options
+			if (string.IsNullOrEmpty(SiteConstants.Instance.MicrosoftAppId) ||
+				string.IsNullOrEmpty(SiteConstants.Instance.MicrosoftAppSecret))
+			{
+				resultMessage.Message = "You need to add the Microsoft app credentials to the web.config";
+				resultMessage.MessageType = GenericMessages.danger;
+			}
+			else
+			{
 
-                        //accessTokenResponse.Body.AccessToken
-                        //foreach (MicrosoftScope scope in accessTokenResponse.Body.Scope.Items) {
-                        //    scope
-                        //}
-                        //accessTokenResponse.Response.Body
+				var client = new MicrosoftOAuthClient
+				{
+					ClientId = SiteConstants.Instance.MicrosoftAppId,
+					ClientSecret = SiteConstants.Instance.MicrosoftAppSecret,
+					RedirectUri = ReturnUrl
+				};
 
-                        // Initialize a new MicrosoftService so we can make calls to the API
-                        var service = MicrosoftService.CreateFromAccessToken(accessTokenResponse.Body.AccessToken);
+				// Session expired?
+				if (input.State != null && Session["MVCForum_" + input.State] == null)
+				{
+					resultMessage.Message = "Session Expired";
+					resultMessage.MessageType = GenericMessages.danger;
+				}
 
-                        // Make the call to the Windows Live API / endpoint
-                        var response = service.WindowsLive.GetSelf();
+				// Check whether an error response was received from Microsoft
+				if (input.Error.HasError)
+				{
+					Session.Remove("MVCForum_" + input.State);
+					resultMessage.Message = AuthErrorDescription;
+					resultMessage.MessageType = GenericMessages.danger;
+				}
 
-                        // Get a reference to the response body
-                        var user = response.Body;
+				// Redirect the user to the Microsoft login dialog
+				if (string.IsNullOrWhiteSpace(input.Code))
+				{
 
-                        var getEmail = user.Emails != null && !string.IsNullOrWhiteSpace(user.Emails.Preferred);
-                        if (!getEmail)
-                        {
-                            resultMessage.Message = LocalizationService.GetResourceString("Members.UnableToGetEmailAddress");
-                            resultMessage.MessageType = GenericMessages.danger;
-                            ShowMessage(resultMessage);
-                            return RedirectToAction("LogOn", "Members");
-                        }
+					// Generate a new unique/random state
+					var state = Guid.NewGuid().ToString();
 
-                        using (UnitOfWorkManager.NewUnitOfWork())
-                        {
-                            var userExists = MembershipService.GetUserByEmail(user.Emails.Preferred);
+					// Save the state in the current user session
+					Session["MVCForum_" + state] = "/";
 
-                            if (userExists != null)
-                            {
-                                try
-                                {
-                                    // Users already exists, so log them in
-                                    FormsAuthentication.SetAuthCookie(userExists.UserName, true);
-                                    resultMessage.Message = LocalizationService.GetResourceString("Members.NowLoggedIn");
-                                    resultMessage.MessageType = GenericMessages.success;
-                                    ShowMessage(resultMessage);
-                                    return RedirectToAction("Index", "Home");
-                                }
-                                catch (Exception ex)
-                                {
-                                    LoggingService.Error(ex);
-                                }
-                            }
-                            else
-                            {
-                                // Not registered already so register them
-                                var viewModel = new MemberAddViewModel
-                                {
-                                    Email = user.Emails.Preferred,
-                                    LoginType = LoginType.Microsoft,
-                                    Password = StringUtils.RandomString(8),
-                                    UserName = user.Name,
-                                    UserAccessToken = accessTokenResponse.Body.AccessToken,
-                                    SocialProfileImageUrl = $"https://apis.live.net/v5.0/{user.Id}/picture"
-                                };
+					// Construct the authorization URL
+					var url = client.GetAuthorizationUrl(state, WindowsLiveScopes.Emails + WindowsLiveScopes.Birthday);
 
-                                //var uri = string.Concat("https://apis.live.net/v5.0/me?access_token=",viewModel.UserAccessToken);
-                                //using (var dl = new WebClient())
-                                //{
-                                //    var profile = JObject.Parse(dl.DownloadString(uri));
-                                //    var pictureUrl = ;
-                                //    if (!string.IsNullOrEmpty(pictureUrl))
-                                //    {
-                                //        //viewModel.SocialProfileImageUrl = getImageUrl;
-                                //    }
-                                //}
+					// Redirect the user
+					return Redirect(url);
+				}
+
+				// Exchange the authorization code for an access token
+				MicrosoftTokenResponse accessTokenResponse;
+				try
+				{
+					Session.Remove("MVCForum_" + input.State);
+					accessTokenResponse = client.GetAccessTokenFromAuthCode(input.Code);
+				}
+				catch (Exception ex)
+				{
+					accessTokenResponse = null;
+					resultMessage.Message = string.Format("Unable to acquire access token<br/>{0}", ex.Message);
+					resultMessage.MessageType = GenericMessages.danger;
+				}
 
 
-                                // Store the viewModel in TempData - Which we'll use in the register logic
-                                TempData[AppConstants.MemberRegisterViewModel] = viewModel;
+				try
+				{
+					if (string.IsNullOrEmpty(resultMessage.Message) || accessTokenResponse != null)
+					{
+						//MicrosoftScope debug = accessTokenResponse.Body.Scope.Items;
 
-                                return RedirectToAction("SocialLoginValidator", "Members");
-                            }
-                        }
+						//accessTokenResponse.Body.AccessToken
+						//foreach (MicrosoftScope scope in accessTokenResponse.Body.Scope.Items) {
+						//    scope
+						//}
+						//accessTokenResponse.Response.Body
 
-                    }
-                    else
-                    {
-                        resultMessage.MessageType = GenericMessages.danger;
-                        ShowMessage(resultMessage);
-                        return RedirectToAction("LogOn", "Members");
-                    }
+						// Initialize a new MicrosoftService so we can make calls to the API
+						var service = MicrosoftService.CreateFromAccessToken(accessTokenResponse.Body.AccessToken);
 
-                }
-                catch (Exception ex)
-                {
-                    resultMessage.Message = string.Format("Unable to get user information<br/>{0}", ex.Message);
-                    resultMessage.MessageType = GenericMessages.danger;
-                    LoggingService.Error(ex);
-                }
+						// Make the call to the Windows Live API / endpoint
+						var response = service.WindowsLive.GetSelf();
+
+						// Get a reference to the response body
+						var user = response.Body;
+
+						var getEmail = user.Emails != null && !string.IsNullOrWhiteSpace(user.Emails.Preferred);
+						if (!getEmail)
+						{
+							resultMessage.Message = LocalizationService.GetResourceString("Members.UnableToGetEmailAddress");
+							resultMessage.MessageType = GenericMessages.danger;
+							ShowMessage(resultMessage);
+							return RedirectToAction("LogOn", "Members");
+						}
+
+						using (UnitOfWorkManager.NewUnitOfWork())
+						{
+							var userExists = MembershipService.GetUserByEmail(user.Emails.Preferred);
+
+							if (userExists != null)
+							{
+								try
+								{
+									// Users already exists, so log them in
+									FormsAuthentication.SetAuthCookie(userExists.UserName, true);
+									resultMessage.Message = LocalizationService.GetResourceString("Members.NowLoggedIn");
+									resultMessage.MessageType = GenericMessages.success;
+									ShowMessage(resultMessage);
+									return RedirectToAction("Index", "Home");
+								}
+								catch (Exception ex)
+								{
+									LoggingService.Error(ex);
+								}
+							}
+							else
+							{
+								// Not registered already so register them
+								var viewModel = new MemberAddViewModel
+								{
+									Email = user.Emails.Preferred,
+									LoginType = LoginType.Microsoft,
+									Password = StringUtils.RandomString(8),
+									UserName = user.Name,
+									UserAccessToken = accessTokenResponse.Body.AccessToken,
+									SocialProfileImageUrl = $"https://apis.live.net/v5.0/{user.Id}/picture"
+								};
+
+								//var uri = string.Concat("https://apis.live.net/v5.0/me?access_token=",viewModel.UserAccessToken);
+								//using (var dl = new WebClient())
+								//{
+								//    var profile = JObject.Parse(dl.DownloadString(uri));
+								//    var pictureUrl = ;
+								//    if (!string.IsNullOrEmpty(pictureUrl))
+								//    {
+								//        //viewModel.SocialProfileImageUrl = getImageUrl;
+								//    }
+								//}
+
+
+								// Store the viewModel in TempData - Which we'll use in the register logic
+								TempData[AppConstants.MemberRegisterViewModel] = viewModel;
+
+								return RedirectToAction("SocialLoginValidator", "Members");
+							}
+						}
+
+					}
+					else
+					{
+						resultMessage.MessageType = GenericMessages.danger;
+						ShowMessage(resultMessage);
+						return RedirectToAction("LogOn", "Members");
+					}
+
+				}
+				catch (Exception ex)
+				{
+					resultMessage.Message = string.Format("Unable to get user information<br/>{0}", ex.Message);
+					resultMessage.MessageType = GenericMessages.danger;
+					LoggingService.Error(ex);
+				}
 
 
 
-            }
+			}
 
 
-            ShowMessage(resultMessage);
-            return RedirectToAction("LogOn", "Members");
-        }
-    }
+			ShowMessage(resultMessage);
+			return RedirectToAction("LogOn", "Members");
+		}
+	}
 }

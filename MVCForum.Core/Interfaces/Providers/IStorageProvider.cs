@@ -2,12 +2,12 @@
 
 namespace MVCForum.Domain.Interfaces.Providers
 {
-    public interface IStorageProvider
-    {
-        string GetUploadFolderPath(bool createIfNotExist, params object[] subFolders);
+	public interface IStorageProvider
+	{
+		string GetUploadFolderPath(bool createIfNotExist, params object[] subFolders);
 
-        string BuildFileUrl(params object[] subPath);
+		string BuildFileUrl(params object[] subPath);
 
-        string SaveAs(string uploadFolderPath, string fileName, HttpPostedFileBase file);
-    }
+		string SaveAs(string uploadFolderPath, string fileName, HttpPostedFileBase file);
+	}
 }

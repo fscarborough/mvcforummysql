@@ -5,8 +5,8 @@ using System.Web;
 
 namespace MVCForum.Website.Areas.Admin.ViewModels
 {
-    public class AjaxPagingViewModel
-    {
-        public int PageIndex { get; set; }
-    }
+	public class AjaxPagingViewModel
+	{
+		public int PageIndex { get; set; }
+	}
 }

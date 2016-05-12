@@ -3,8 +3,8 @@ using MVCForum.Domain.DomainModel;
 
 namespace MVCForum.Website.ViewModels
 {
-    public class PopularTagViewModel
-    {
-        public Dictionary<TopicTag, int> PopularTags { get; set; }
-    }
+	public class PopularTagViewModel
+	{
+		public Dictionary<TopicTag, int> PopularTags { get; set; }
+	}
 }

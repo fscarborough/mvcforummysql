@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace MVCForum.Utilities 
+namespace MVCForum.Utilities
 {
 
-    #region NOTES
-    /*
+	#region NOTES
+	/*
 
 	   Porter stemmer in CSharp, based on the Java port. The original paper is in
 
@@ -67,19 +67,19 @@ namespace MVCForum.Utilities
 	
 	*/
 
-    /**
+	/**
       * Stemmer, implementing the Porter Stemming Algorithm
       *
       * The Stemmer class transforms a word into its root form.  The input
       * word can be provided a character at time (by calling add()), or at once
       * by calling one of the various stem(something) methods.
       */
-    
-    #endregion
 
-	public interface IStemmerInterface 
+	#endregion
+
+	public interface IStemmerInterface
 	{
-		string StemTerm( string s );
+		string StemTerm(string s);
 	}
 
 
@@ -90,10 +90,10 @@ namespace MVCForum.Utilities
 			_iEnd, /* offset to end of stemmed word */
 			_j, _k;
 
-	    private const int INC = 200;
-	    /* unit of size whereby b is increased */
-		
-		public PorterStemmer() 
+		private const int INC = 200;
+		/* unit of size whereby b is increased */
+
+		public PorterStemmer()
 		{
 			_b = new char[INC];
 			_i = 0;
@@ -101,9 +101,9 @@ namespace MVCForum.Utilities
 		}
 
 		/* Implementation of the .NET interface - added as part of realease 4 (Leif) */
-		public string StemTerm( string s )
+		public string StemTerm(string s)
 		{
-			SetTerm( s );
+			SetTerm(s);
 			stem();
 			return getTerm();
 		}
@@ -119,16 +119,16 @@ namespace MVCForum.Utilities
 			(Leif)
 		*/
 
-		
-		
-		void SetTerm( string s)
+
+
+		void SetTerm(string s)
 		{
 			_i = s.Length;
 			var new_b = new char[_i];
 			for (int c = 0; c < _i; c++)
-			new_b[c] = s[c];
+				new_b[c] = s[c];
 
-			_b  = new_b;		
+			_b = new_b;
 
 		}
 
@@ -146,11 +146,11 @@ namespace MVCForum.Utilities
 		 * adding characters, you can call stem(void) to stem the word.
 		 */
 
-		public void add(char ch) 
+		public void add(char ch)
 		{
-			if (_i == _b.Length) 
+			if (_i == _b.Length)
 			{
-				var new_b = new char[_i+INC];
+				var new_b = new char[_i + INC];
 				for (var c = 0; c < _i; c++)
 					new_b[c] = _b[c];
 				_b = new_b;
@@ -164,11 +164,11 @@ namespace MVCForum.Utilities
 		 * faster.
 		 */
 
-		public void add(char[] w, int wLen) 
+		public void add(char[] w, int wLen)
 		{
-			if (_i+wLen >= _b.Length) 
+			if (_i + wLen >= _b.Length)
 			{
-				var new_b = new char[_i+wLen+INC];
+				var new_b = new char[_i + wLen + INC];
 				for (int c = 0; c < _i; c++)
 					new_b[c] = _b[c];
 				_b = new_b;
@@ -182,15 +182,15 @@ namespace MVCForum.Utilities
 		 * or a reference to the internal buffer can be retrieved by getResultBuffer
 		 * and getResultLength (which is generally more efficient.)
 		 */
-		public override string ToString() 
+		public override string ToString()
 		{
-			return new String(_b,0,_iEnd);
+			return new String(_b, 0, _iEnd);
 		}
 
 		/**
 		 * Returns the length of the word resulting from the stemming process.
 		 */
-		public int GetResultLength() 
+		public int GetResultLength()
 		{
 			return _iEnd;
 		}
@@ -200,18 +200,18 @@ namespace MVCForum.Utilities
 		 * the stemming process.  You also need to consult getResultLength()
 		 * to determine the length of the result.
 		 */
-		public char[] GetResultBuffer() 
+		public char[] GetResultBuffer()
 		{
 			return _b;
 		}
 
 		/* cons(i) is true <=> b[i] is a consonant. */
-		private bool cons(int i) 
+		private bool cons(int i)
 		{
-			switch (_b[i]) 
+			switch (_b[i])
 			{
 				case 'a': case 'e': case 'i': case 'o': case 'u': return false;
-				case 'y': return (i==0) || !cons(i-1);
+				case 'y': return (i == 0) || !cons(i - 1);
 				default: return true;
 			}
 		}
@@ -226,19 +226,19 @@ namespace MVCForum.Utilities
 			  <c>vcvcvc<v> gives 3
 			  ....
 		*/
-		private int m() 
+		private int m()
 		{
 			int n = 0;
 			int i = 0;
-			while(true) 
+			while (true)
 			{
 				if (i > _j) return n;
-				if (! cons(i)) break; i++;
+				if (!cons(i)) break; i++;
 			}
 			i++;
-			while(true) 
+			while (true)
 			{
-				while(true) 
+				while (true)
 				{
 					if (i > _j) return n;
 					if (cons(i)) break;
@@ -246,10 +246,10 @@ namespace MVCForum.Utilities
 				}
 				i++;
 				n++;
-				while(true) 
+				while (true)
 				{
 					if (i > _j) return n;
-					if (! cons(i)) break;
+					if (!cons(i)) break;
 					i++;
 				}
 				i++;
@@ -257,21 +257,21 @@ namespace MVCForum.Utilities
 		}
 
 		/* vowelinstem() is true <=> 0,...j contains a vowel */
-		private bool vowelinstem() 
+		private bool vowelinstem()
 		{
 			int i;
 			for (i = 0; i <= _j; i++)
-				if (! cons(i))
+				if (!cons(i))
 					return true;
 			return false;
 		}
 
 		/* doublec(j) is true <=> j,(j-1) contain a double consonant. */
-		private bool doublec(int j) 
+		private bool doublec(int j)
 		{
 			if (j < 1)
 				return false;
-			if (_b[j] != _b[j-1])
+			if (_b[j] != _b[j - 1])
 				return false;
 			return cons(j);
 		}
@@ -284,9 +284,9 @@ namespace MVCForum.Utilities
 			  snow, box, tray.
 
 		*/
-		private bool cvc(int i) 
+		private bool cvc(int i)
 		{
-			if (i < 2 || !cons(i) || cons(i-1) || !cons(i-2))
+			if (i < 2 || !cons(i) || cons(i - 1) || !cons(i - 2))
 				return false;
 			int ch = _b[i];
 			if (ch == 'w' || ch == 'x' || ch == 'y')
@@ -294,34 +294,34 @@ namespace MVCForum.Utilities
 			return true;
 		}
 
-		private bool ends(String s) 
+		private bool ends(String s)
 		{
 			int l = s.Length;
-			int o = _k-l+1;
+			int o = _k - l + 1;
 			if (o < 0)
 				return false;
 			char[] sc = s.ToCharArray();
 			for (int i = 0; i < l; i++)
-				if (_b[o+i] != sc[i])
+				if (_b[o + i] != sc[i])
 					return false;
-			_j = _k-l;
+			_j = _k - l;
 			return true;
 		}
 
 		/* setto(s) sets (j+1),...k to the characters in the string s, readjusting
 		   k. */
-		private void setto(String s) 
+		private void setto(String s)
 		{
 			int l = s.Length;
-			int o = _j+1;
+			int o = _j + 1;
 			char[] sc = s.ToCharArray();
 			for (int i = 0; i < l; i++)
-				_b[o+i] = sc[i];
-			_k = _j+l;
+				_b[o + i] = sc[i];
+			_k = _j + l;
 		}
 
 		/* r(s) is used further down. */
-		private void r(String s) 
+		private void r(String s)
 		{
 			if (m() > 0)
 				setto(s);
@@ -348,23 +348,23 @@ namespace MVCForum.Utilities
 
 		*/
 
-		private void step1() 
+		private void step1()
 		{
-			if (_b[_k] == 's') 
+			if (_b[_k] == 's')
 			{
 				if (ends("sses"))
 					_k -= 2;
 				else if (ends("ies"))
 					setto("i");
-				else if (_b[_k-1] != 's')
+				else if (_b[_k - 1] != 's')
 					_k--;
 			}
-			if (ends("eed")) 
+			if (ends("eed"))
 			{
 				if (m() > 0)
 					_k--;
-			} 
-			else if ((ends("ed") || ends("ing")) && vowelinstem()) 
+			}
+			else if ((ends("ed") || ends("ing")) && vowelinstem())
 			{
 				_k = _j;
 				if (ends("at"))
@@ -373,7 +373,7 @@ namespace MVCForum.Utilities
 					setto("ble");
 				else if (ends("iz"))
 					setto("ize");
-				else if (doublec(_k)) 
+				else if (doublec(_k))
 				{
 					_k--;
 					int ch = _b[_k];
@@ -385,7 +385,7 @@ namespace MVCForum.Utilities
 		}
 
 		/* step2() turns terminal y to i when there is another vowel in the stem. */
-		private void step2() 
+		private void step2()
 		{
 			if (ends("y") && vowelinstem())
 				_b[_k] = 'i';
@@ -394,13 +394,13 @@ namespace MVCForum.Utilities
 		/* step3() maps double suffices to single ones. so -ization ( = -ize plus
 		   -ation) maps to -ize etc. note that the string before the suffix must give
 		   m() > 0. */
-		private void step3() 
+		private void step3()
 		{
 			if (_k == 0)
 				return;
-			
+
 			/* For Bug 1 */
-			switch (_b[_k-1]) 
+			switch (_b[_k - 1])
 			{
 				case 'a':
 					if (ends("ational")) { r("ate"); break; }
@@ -439,15 +439,15 @@ namespace MVCForum.Utilities
 				case 'g':
 					if (ends("logi")) { r("log"); break; }
 					break;
-				default :
+				default:
 					break;
 			}
 		}
 
 		/* step4() deals with -ic-, -full, -ness etc. similar strategy to step3. */
-		private void step4() 
+		private void step4()
 		{
-			switch (_b[_k]) 
+			switch (_b[_k])
 			{
 				case 'e':
 					if (ends("icate")) { r("ic"); break; }
@@ -468,13 +468,13 @@ namespace MVCForum.Utilities
 		}
 
 		/* step5() takes off -ant, -ence etc., in context <c>vcvc<v>. */
-		private void step5() 
+		private void step5()
 		{
 			if (_k == 0)
 				return;
 
 			/* for Bug 1 */
-			switch ( _b[_k-1] ) 
+			switch (_b[_k - 1])
 			{
 				case 'a':
 					if (ends("al")) break; return;
@@ -498,7 +498,7 @@ namespace MVCForum.Utilities
 					if (ends("ion") && _j >= 0 && (_b[_j] == 's' || _b[_j] == 't')) break;
 					/* j >= 0 fixes Bug 2 */
 					if (ends("ou")) break; return;
-					/* takes care of -ous */
+				/* takes care of -ous */
 				case 's':
 					if (ends("ism")) break; return;
 				case 't':
@@ -518,14 +518,14 @@ namespace MVCForum.Utilities
 		}
 
 		/* step6() removes a final -e if m() > 1. */
-		private void step6() 
+		private void step6()
 		{
 			_j = _k;
-			
-			if (_b[_k] == 'e') 
+
+			if (_b[_k] == 'e')
 			{
 				int a = m();
-				if (a > 1 || a == 1 && !cvc(_k-1))
+				if (a > 1 || a == 1 && !cvc(_k - 1))
 					_k--;
 			}
 			if (_b[_k] == 'l' && doublec(_k) && m() > 1)
@@ -537,10 +537,10 @@ namespace MVCForum.Utilities
 		 * from the input.  You can retrieve the result with
 		 * getResultLength()/getResultBuffer() or toString().
 		 */
-		public void stem() 
+		public void stem()
 		{
 			_k = _i - 1;
-			if (_k > 1) 
+			if (_k > 1)
 			{
 				step1();
 				step2();
@@ -549,7 +549,7 @@ namespace MVCForum.Utilities
 				step5();
 				step6();
 			}
-			_iEnd = _k+1;
+			_iEnd = _k + 1;
 			_i = 0;
 		}
 

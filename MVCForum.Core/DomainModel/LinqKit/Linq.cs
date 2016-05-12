@@ -10,13 +10,13 @@ namespace MVCForum.Domain.DomainModel.LinqKit
 	public static class Linq
 	{
 		// Returns the given anonymous method as a lambda expression
-		public static Expression<Func<T, TResult>> Expr<T, TResult> (Expression<Func<T, TResult>> expr)
+		public static Expression<Func<T, TResult>> Expr<T, TResult>(Expression<Func<T, TResult>> expr)
 		{
 			return expr;
 		}
 
 		// Returns the given anonymous function as a Func delegate
-		public static Func<T, TResult> Func<T, TResult> (Func<T, TResult> expr)
+		public static Func<T, TResult> Func<T, TResult>(Func<T, TResult> expr)
 		{
 			return expr;
 		}

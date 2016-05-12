@@ -10,44 +10,44 @@ using MVCForum.Utilities;
 
 namespace MVCForum.Services
 {
-    public partial class PollAnswerService : IPollAnswerService
-    {
-        private readonly MVCForumContext _context;
-        public PollAnswerService(IMVCForumContext context)
-        {
-            _context = context as MVCForumContext;
-        }
+	public partial class PollAnswerService : IPollAnswerService
+	{
+		private readonly MVCForumContext _context;
+		public PollAnswerService(IMVCForumContext context)
+		{
+			_context = context as MVCForumContext;
+		}
 
-        public List<PollAnswer> GetAllPollAnswers()
-        {
-            return _context.PollAnswer
-                    .Include(x => x.Poll).ToList();
-        }
+		public List<PollAnswer> GetAllPollAnswers()
+		{
+			return _context.PollAnswer
+					.Include(x => x.Poll).ToList();
+		}
 
-        public PollAnswer Add(PollAnswer pollAnswer)
-        {
-            pollAnswer.Answer = StringUtils.SafePlainText(pollAnswer.Answer);
-            return _context.PollAnswer.Add(pollAnswer);
-        }
+		public PollAnswer Add(PollAnswer pollAnswer)
+		{
+			pollAnswer.Answer = StringUtils.SafePlainText(pollAnswer.Answer);
+			return _context.PollAnswer.Add(pollAnswer);
+		}
 
-        public List<PollAnswer> GetAllPollAnswersByPoll(Poll poll)
-        {
-            var answers = _context.PollAnswer
-                    .Include(x => x.Poll)
-                    .AsNoTracking()
-                    .Where(x => x.Poll.Id == poll.Id).ToList();
-            return answers;
-        }
+		public List<PollAnswer> GetAllPollAnswersByPoll(Poll poll)
+		{
+			var answers = _context.PollAnswer
+					.Include(x => x.Poll)
+					.AsNoTracking()
+					.Where(x => x.Poll.Id == poll.Id).ToList();
+			return answers;
+		}
 
-        public PollAnswer Get(Guid id)
-        {
-            return _context.PollAnswer.FirstOrDefault(x => x.Id == id);
-        }
+		public PollAnswer Get(Guid id)
+		{
+			return _context.PollAnswer.FirstOrDefault(x => x.Id == id);
+		}
 
-        public void Delete(PollAnswer pollAnswer)
-        {
-            _context.PollAnswer.Remove(pollAnswer);
-        }
+		public void Delete(PollAnswer pollAnswer)
+		{
+			_context.PollAnswer.Remove(pollAnswer);
+		}
 
-    }
+	}
 }

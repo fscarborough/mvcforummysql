@@ -2,8 +2,8 @@
 
 namespace MVCForum.Domain.Events
 {
-    public class VoteEventArgs  : MVCForumEventArgs
-    {
-        public Vote Vote { get; set; }
-    }
+	public class VoteEventArgs : MVCForumEventArgs
+	{
+		public Vote Vote { get; set; }
+	}
 }

@@ -2,5 +2,5 @@
 
 namespace MVCForum.Website.Application.Localization
 {
-    public delegate LocalizedString Localizer(string text, params object[] args);
+	public delegate LocalizedString Localizer(string text, params object[] args);
 }

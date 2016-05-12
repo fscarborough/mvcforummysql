@@ -2,8 +2,8 @@
 
 namespace MVCForum.Domain.Interfaces
 {
-    public interface IMVCForumContext : IDisposable
-    {
-        
-    }
+	public interface IMVCForumContext : IDisposable
+	{
+
+	}
 }

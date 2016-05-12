@@ -4,20 +4,20 @@ using EFCache;
 
 namespace MVCForum.Services.Data.Caching
 {
-    public class CachingConfiguration : DbConfiguration
-    {
-        public CachingConfiguration()
-        {
-            var transactionHandler = new CacheTransactionHandler(new InMemoryCache());
+	public class CachingConfiguration : DbConfiguration
+	{
+		public CachingConfiguration()
+		{
+			var transactionHandler = new CacheTransactionHandler(new InMemoryCache());
 
-            AddInterceptor(transactionHandler);
+			AddInterceptor(transactionHandler);
 
-            var cachingPolicy = new CachingPolicy();
+			var cachingPolicy = new CachingPolicy();
 
-            Loaded +=
-              (sender, args) => args.ReplaceService<DbProviderServices>(
-                (s, _) => new CachingProviderServices(s, transactionHandler,
-                  cachingPolicy));
-        }
-    }
+			Loaded +=
+			  (sender, args) => args.ReplaceService<DbProviderServices>(
+				(s, _) => new CachingProviderServices(s, transactionHandler,
+				  cachingPolicy));
+		}
+	}
 }

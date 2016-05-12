@@ -6,8 +6,8 @@ using MVCForum.Domain.DomainModel;
 
 namespace MVCForum.Website.ViewModels
 {
-    public class HighEarnersPointViewModel
-    {
-        public Dictionary<MembershipUser, int> HighEarners { get; set; }
-    }
+	public class HighEarnersPointViewModel
+	{
+		public Dictionary<MembershipUser, int> HighEarners { get; set; }
+	}
 }

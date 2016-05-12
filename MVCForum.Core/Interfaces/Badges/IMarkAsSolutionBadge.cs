@@ -1,7 +1,7 @@
-﻿namespace MVCForum.Domain.Interfaces.Badges 
+﻿namespace MVCForum.Domain.Interfaces.Badges
 {
-    public interface IMarkAsSolutionBadge : IBadge
-    {
-       
-    }
+	public interface IMarkAsSolutionBadge : IBadge
+	{
+
+	}
 }

@@ -42,8 +42,8 @@
 using MVCForum.Domain.DomainModel;
 namespace MVCForum.Domain.Interfaces.Badges
 {
-    public interface IBadge
-    {
-        bool Rule(MembershipUser user);
-    }
+	public interface IBadge
+	{
+		bool Rule(MembershipUser user);
+	}
 }

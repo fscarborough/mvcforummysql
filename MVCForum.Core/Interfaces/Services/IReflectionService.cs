@@ -4,9 +4,9 @@ using System.Reflection;
 
 namespace MVCForum.Domain.Interfaces.Services
 {
-    public partial interface IReflectionService
-    {
-        List<Assembly> GetAssemblies();
-        bool InterfaceFilter(Type typeObj, Object criteriaObj);
-    }
+	public partial interface IReflectionService
+	{
+		List<Assembly> GetAssemblies();
+		bool InterfaceFilter(Type typeObj, Object criteriaObj);
+	}
 }
