@@ -5,6 +5,8 @@ MVCForum - Fully Featured ASP.NET MVC 5 Forum
 
 MVCForum is a fully featured and themeable enterprise level ASP.NET MVC 5 discussion board/forum. The software has features similar to that seen on StackOverFlow plus LOTS more (See list below). Along with MVC it’s built using Unity & Entity Framework 6 code first and is super easy to extend and add your own features.
 
+This Fork contains changes for the forum to use a MySQL Database.  Using Connector/Net 6.9.8
+
 Current Features Include
 
 - Multi-Lingual / Localisation
